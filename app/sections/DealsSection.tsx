@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Sparkles } from "lucide-react";
 
 interface DealCard {
   id: string;
@@ -63,18 +64,51 @@ const addons: DealCard[] = [
   },
 ];
 
+// Stagger container with delayChildren
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.2,
+      delayChildren: 0.1,
     },
   },
 };
 
-const cardVariants = {
+// Slide-in animation for deal cards
+const slideInLeftVariants = {
+  hidden: {
+    opacity: 0,
+    x: -50,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const slideInRightVariants = {
+  hidden: {
+    opacity: 0,
+    x: 50,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+// AddOn cards slide up
+const slideUpVariants = {
   hidden: {
     opacity: 0,
     y: 30,
@@ -83,7 +117,7 @@ const cardVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.5,
+      duration: 0.6,
       ease: [0.25, 0.46, 0.45, 0.94] as const,
     },
   },
@@ -113,14 +147,33 @@ const disclaimerVariants = {
   },
 };
 
+const lineVariants = {
+  hidden: { scaleX: 0 },
+  visible: {
+    scaleX: 1,
+    transition: {
+      duration: 0.8,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
 interface DealCardProps {
   deal: DealCard;
+  index?: number;
+  slideDirection?: "left" | "right" | "up";
 }
 
-function DealCard({ deal }: DealCardProps) {
+function DealCard({ deal, index = 0, slideDirection = "up" }: DealCardProps) {
+  const variants = slideDirection === "left" 
+    ? slideInLeftVariants 
+    : slideDirection === "right" 
+    ? slideInRightVariants 
+    : slideUpVariants;
+
   return (
     <motion.div
-      variants={cardVariants}
+      variants={variants}
       whileHover={{
         scale: 1.02,
         transition: { duration: 0.3, ease: "easeOut" },
@@ -138,7 +191,13 @@ function DealCard({ deal }: DealCardProps) {
     >
       {/* Gold accent for non-addons */}
       {!deal.isAddon && (
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#DD9933] to-transparent" />
+        <motion.div 
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: index * 0.1 + 0.3 }}
+          className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#DD9933] to-transparent origin-left"
+        />
       )}
 
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -154,9 +213,19 @@ function DealCard({ deal }: DealCardProps) {
 
         {/* Deal Price */}
         <div className="flex-shrink-0">
-          <span className="text-2xl md:text-3xl font-bold text-[#DD9933]">
+          <motion.span 
+            className="text-2xl md:text-3xl font-bold text-[#DD9933]"
+            initial={{ opacity: 0, scale: 0.5 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ 
+              duration: 0.5, 
+              delay: index * 0.1 + 0.4,
+              ease: [0.25, 0.46, 0.45, 0.94]
+            }}
+          >
             {deal.price}
-          </span>
+          </motion.span>
         </div>
       </div>
     </motion.div>
@@ -167,9 +236,48 @@ export default function DealsSection() {
   return (
     <section
       id="deals"
-      className="py-20 md:py-28 bg-black"
+      className="py-20 md:py-28 bg-black relative overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Decorative animated elements */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 0.08, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.2 }}
+        className="absolute top-1/4 left-0 w-[500px] h-[500px] rounded-full bg-[#DD9933] blur-3xl"
+      />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 0.05, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.2, delay: 0.2 }}
+        className="absolute bottom-1/4 right-0 w-[400px] h-[400px] rounded-full bg-[#CC3366] blur-3xl"
+      />
+
+      {/* Floating sparkles decoration */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.5 }}
+        className="absolute top-32 right-20 hidden lg:block"
+      >
+        <motion.div
+          animate={{ 
+            rotate: [0, 10, -10, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <Sparkles className="w-8 h-8 text-[#DD9933]/30" />
+        </motion.div>
+      </motion.div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Title */}
         <motion.div
           className="text-center mb-14"
@@ -178,35 +286,65 @@ export default function DealsSection() {
           viewport={{ once: true, amount: 0.3 }}
           variants={titleVariants}
         >
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 text-[#DD9933] text-sm uppercase tracking-widest mb-4"
+          >
+            <Sparkles className="w-4 h-4" />
+            Angebote
+            <Sparkles className="w-4 h-4" />
+          </motion.span>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Deals & AddOns
           </h2>
-          <div className="w-24 h-1 bg-[#DD9933] mx-auto" />
+          <motion.div 
+            className="w-24 h-1 bg-[#DD9933] mx-auto"
+            variants={lineVariants}
+          />
         </motion.div>
 
-        {/* Multi-Entry Cards (Deals) */}
+        {/* Multi-Entry Cards (Deals) with slide-in animations */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
+          viewport={{ once: true, amount: 0.2 }}
           variants={containerVariants}
         >
-          {deals.map((deal) => (
-            <DealCard key={deal.id} deal={deal} />
+          {deals.map((deal, index) => (
+            <DealCard 
+              key={deal.id} 
+              deal={deal} 
+              index={index}
+              slideDirection={index === 0 ? "left" : "right"}
+            />
           ))}
         </motion.div>
 
-        {/* AddOns Grid */}
+        {/* AddOns Label */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-6"
+        >
+          <span className="text-white/50 text-sm uppercase tracking-widest">Zusatzleistungen</span>
+        </motion.div>
+
+        {/* AddOns Grid with stagger reveal */}
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
+          viewport={{ once: true, amount: 0.2 }}
           variants={containerVariants}
         >
-          {addons.map((addon) => (
-            <DealCard key={addon.id} deal={addon} />
+          {addons.map((addon, index) => (
+            <DealCard key={addon.id} deal={addon} index={index} slideDirection="up" />
           ))}
         </motion.div>
 
@@ -222,21 +360,46 @@ export default function DealsSection() {
             Disclaimer
           </h4>
           <div className="text-gray-500 text-sm leading-relaxed space-y-2">
-            <p>
+            <motion.p
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+            >
               Unsere Eintrittspreise verstehen sich für eine Aufenthaltsdauer von maximal 12 Stunden.
-            </p>
-            <p>
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+            >
               Nachbuchungen bei Zeitüberschreitungen werden automatisch vom Kassensystem durchgeführt und unsere Mitarbeiter haben keinerlei Einfluss auf diese Nachbuchungen.
-            </p>
-            <p>
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4, duration: 0.4 }}
+            >
               Das heißt: Nach Zeitüberschreitung von 12 Stunden wird jede weitere, angefangene Stunde mit 3,00 € berechnet.
-            </p>
-            <p>
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, duration: 0.4 }}
+            >
               Es besteht kein Rechtsanspruch auf Rabatte und Kulanzregelungen.
-            </p>
-            <p>
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6, duration: 0.4 }}
+            >
               Zu Sonderevents (Bear Pride / Poolparty / Externe Veranstaltungen) können andere Eintrittspreise gelten.
-            </p>
+            </motion.p>
           </div>
         </motion.div>
       </div>

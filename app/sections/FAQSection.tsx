@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Section } from "../components/Section";
 import { useInView } from "../hooks/useInView";
 import { HelpCircle, ChevronDown, MessageCircle } from "lucide-react";
 import { Button } from "../components/Button";
 
+// Enhanced stagger container with delayChildren
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -25,7 +26,18 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: [0.22, 1, 0.36, 1] as const,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const lineVariants = {
+  hidden: { scaleX: 0 },
+  visible: {
+    scaleX: 1,
+    transition: {
+      duration: 0.8,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
     },
   },
 };
@@ -130,6 +142,8 @@ function FAQItem({
     <motion.div
       variants={itemVariants}
       className="overflow-hidden rounded-xl border border-white/10 bg-[#212121]/50 backdrop-blur-sm"
+      whileHover={{ borderColor: "rgba(221, 153, 51, 0.2)" }}
+      transition={{ duration: 0.3 }}
     >
       <motion.button
         onClick={onToggle}
@@ -138,14 +152,17 @@ function FAQItem({
         whileTap={{ scale: 0.99 }}
       >
         <div className="flex items-center gap-3">
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#DD9933]/10 text-xs font-medium text-[#DD9933]">
+          <motion.span 
+            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#DD9933]/10 text-xs font-medium text-[#DD9933]"
+            whileHover={{ scale: 1.1, backgroundColor: "rgba(221, 153, 51, 0.2)" }}
+          >
             {index + 1}
-          </span>
+          </motion.span>
           <span className="font-medium text-white sm:text-lg">{question}</span>
         </div>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="ml-4 shrink-0"
         >
           <ChevronDown className="h-5 w-5 text-[#DD9933]" />
@@ -158,11 +175,16 @@ function FAQItem({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <div className="border-t border-white/10 px-4 pb-4 pt-2 sm:px-5 sm:pb-5">
+            <motion.div 
+              className="border-t border-white/10 px-4 pb-4 pt-2 sm:px-5 sm:pb-5"
+              initial={{ y: -10 }}
+              animate={{ y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
               <p className="pl-9 leading-relaxed text-white/70">{answer}</p>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -188,12 +210,21 @@ export function FAQSection() {
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 0.3 } : { opacity: 0 }}
-          transition={{ duration: 1 }}
+          initial={{ opacity: 0, x: 100 }}
+          animate={isInView ? { opacity: 0.3, x: 0 } : { opacity: 0, x: 100 }}
+          transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="absolute -right-1/4 top-0 h-[600px] w-[600px] rounded-full bg-[#DD9933]/5 blur-3xl"
         />
       </div>
+
+      {/* Section divider top */}
+      <motion.div
+        variants={lineVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#DD9933]/50 to-transparent"
+      />
 
       <motion.div
         variants={containerVariants}
@@ -204,17 +235,28 @@ export function FAQSection() {
         {/* Section Header */}
         <motion.div variants={itemVariants} className="mb-12 text-center md:mb-16">
           <motion.div
-            initial={{ scale: 0 }}
-            animate={isInView ? { scale: 1 } : { scale: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            initial={{ scale: 0, rotate: -180 }}
+            animate={isInView ? { scale: 1, rotate: 0 } : { scale: 0, rotate: -180 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="mb-4 inline-flex items-center justify-center rounded-full bg-[#DD9933]/10 p-3"
           >
             <HelpCircle className="h-6 w-6 text-[#DD9933]" />
           </motion.div>
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="inline-block text-[#DD9933] text-sm uppercase tracking-widest mb-4"
+          >
+            Hilfe
+          </motion.span>
           <h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
             <span className="text-gradient-gold">Fragen + Antworten</span>
           </h2>
-          <div className="section-divider mx-auto mb-6 w-24" />
+          <motion.div 
+            className="section-divider mx-auto mb-6 w-24"
+            variants={lineVariants}
+          />
           <motion.p
             variants={itemVariants}
             className="mx-auto max-w-2xl text-lg text-white/70"
@@ -224,7 +266,7 @@ export function FAQSection() {
           </motion.p>
         </motion.div>
 
-        {/* FAQ List */}
+        {/* FAQ List with enhanced animations */}
         <motion.div
           variants={containerVariants}
           className="mx-auto max-w-3xl space-y-3"
@@ -247,24 +289,56 @@ export function FAQSection() {
           className="mt-12 text-center"
         >
           <motion.div
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.02, borderColor: "rgba(221, 153, 51, 0.4)" }}
             className="inline-flex flex-col items-center gap-4 rounded-2xl border border-[#DD9933]/20 bg-[#DD9933]/5 px-8 py-6"
           >
-            <div className="flex items-center gap-3">
-              <MessageCircle className="h-5 w-5 text-[#DD9933]" />
+            <motion.div 
+              className="flex items-center gap-3"
+              initial={{ opacity: 0, y: 10 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+              >
+                <MessageCircle className="h-5 w-5 text-[#DD9933]" />
+              </motion.div>
               <span className="text-lg font-medium text-white">
                 Du hast noch eine Frage?
               </span>
-            </div>
-            <p className="text-white/60">
+            </motion.div>
+            <motion.p 
+              className="text-white/60"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
               Dann stell sie uns direkt:
-            </p>
-            <Button variant="primary" size="lg">
-              Kontakt
-            </Button>
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button variant="primary" size="lg">
+                Kontakt
+              </Button>
+            </motion.div>
           </motion.div>
         </motion.div>
       </motion.div>
+
+      {/* Section divider bottom */}
+      <motion.div
+        variants={lineVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#DD9933]/50 to-transparent"
+      />
     </Section>
   );
 }

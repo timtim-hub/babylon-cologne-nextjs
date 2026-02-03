@@ -2,6 +2,7 @@ export { Button } from "./Button";
 export { Container } from "./Container";
 export { Section } from "./Section";
 export { default as Navbar } from "./Navbar";
+export { TiltCard } from "./TiltCard";
 export {
   FadeIn,
   SlideIn,
@@ -14,3 +15,10 @@ export {
   MagneticButton,
   COLORS,
 } from "./MotionComponents";
+
+export {
+  SplitText,
+  TypewriterText,
+  GradientText,
+  RevealText,
+} from "./AnimatedText";

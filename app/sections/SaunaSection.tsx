@@ -1,237 +1,429 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence, Variants } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRef, useState } from "react";
+import Image from "next/image";
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { Section } from "../components";
 
 interface Facility {
   id: number;
   title: string;
+  subtitle: string;
   description: string;
+  image: string;
 }
 
 const facilities: Facility[] = [
   {
     id: 1,
     title: "AUSSENBEREICH",
+    subtitle: "Mediterranes Flair",
     description:
-      "Von unserer Bar aus gelangst Du direkt zu unserem großzügigen Innenhof mit mediterranem Flair.\n\nAls einzige Sauna in Köln kannst Du hier in unserem über 10m langen Außenpool Bahnen \"ziehen\", nach einem der Aufgüsse oder an heißen Tagen die passende Abkühlung und Erfrischung finden.",
+      "Von unserer Bar aus gelangst Du direkt zu unserem großzügigen Innenhof. Als einzige Sauna in Köln kannst Du hier in unserem über 10m langen Außenpool Bahnen ziehen und nach Aufgüssen die passende Abkühlung finden.",
+    image: "/images/aussenbereich.jpg",
   },
   {
     id: 2,
     title: "FINNISCHE SAUNA",
+    subtitle: "Klassische Aufgüsse",
     description:
-      "Im Hinterhaus findest Du unsere großzügige finnische Sauna mit Platz für bis zu 50 Personen. Mit ihrem fantastischem Blick über den gesamten Innenhof ein absolutes Highlight. Immer mittwochs, samstags und sonntags bringen wir Dich hier bei unseren bewährten Aufgüssen ins Schwitzen. Selbstverständlich reichen wir nach den Aufgüssen kühle Erfrischungen.",
+      "Im Hinterhaus findest Du unsere großzügige finnische Sauna mit Platz für bis zu 50 Personen. Mit ihrem fantastischem Blick über den gesamten Innenhof ein absolutes Highlight.",
+    image: "/images/finnische-sauna.jpg",
   },
   {
     id: 3,
     title: "DAMPFSAUNA",
+    subtitle: "Größte Kölns",
     description:
-      "Unsere Dampfsauna ist nicht nur die größte Kölns, sie bietet mit Ihren Gängen und Labyrinthen auch eine ganze Menge zu entdecken.\n\nBegib Dich auf eine Entdeckungsreise, genieße die wohltuende Wärme, den angenehmen Duft und lasse Deiner Fantasien freien Lauf.",
+      "Unsere Dampfsauna ist nicht nur die größte Kölns, sie bietet mit ihren Gängen und Labyrinthen auch eine ganze Menge zu entdecken. Begib Dich auf eine Entdeckungsreise.",
+    image: "/images/dampfsauna.jpg",
   },
   {
     id: 4,
     title: "WHIRLPOOL",
+    subtitle: "Römischer Stil",
     description:
-      "Direkt vor dem Dampfsauna befindet sich unser großer Whirlpool im römischen Stil. Mit einer Temperatur von 36°C sorgen Millionen kleiner Luftblasen für einen Badespaß, der seinesgleichen sucht.\n\nEin einladender Platz um alleine zu entspannen oder das Treiben rundherum zu beobachten.",
+      "Direkt vor der Dampfsauna befindet sich unser großer Whirlpool im römischen Stil. Mit 36°C und Millionen kleiner Luftblasen für einen Badespaß, der seinesgleichen sucht.",
+    image: "/images/whirlpool.jpg",
   },
   {
     id: 5,
     title: "BAR",
+    subtitle: "Genießen & Verweilen",
     description:
-      "Unsere großzügig gestaltete Bar mit offenem Kamin lädt Dich zum Genießen und Verweilen ein.\n\nNeben einer großzügigen Getränkeauswahl halten wir hier auch Einiges für den Hunger zwischendurch bereit. Ob Flammkuchen, diverse Salate oder Herzhaftes – unsere freundlichen Mitarbeiter bereiten stets alles frisch für Dich zu.",
+      "Unsere großzügig gestaltete Bar mit offenem Kamin lädt zum Genießen ein. Neben Getränken halten wir Flammkuchen, Salate und Herzhaftes stets frisch für Dich bereit.",
+    image: "/images/bar.jpg",
   },
 ];
 
-const slideVariants: Variants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 300 : -300,
-    opacity: 0,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-  },
-  exit: (direction: number) => ({
-    x: direction < 0 ? 300 : -300,
-    opacity: 0,
-  }),
-};
-
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      duration: 0.6,
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut",
-    },
-  },
-};
-
-export default function SaunaSection(): React.ReactElement {
-  const [[currentIndex, direction], setCurrentIndex] = useState<[number, number]>(
-    [0, 0]
+// Animated gradient text component
+function AnimatedGradientText({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <span className={`relative inline-block ${className}`}>
+      <span className="bg-gradient-to-r from-gold via-gold-light to-gold bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-x">
+        {children}
+      </span>
+    </span>
   );
+}
 
-  const paginate = (newDirection: number): void => {
-    const newIndex = currentIndex + newDirection;
-    if (newIndex >= 0 && newIndex < facilities.length) {
-      setCurrentIndex([newIndex, newDirection]);
-    } else if (newIndex < 0) {
-      setCurrentIndex([facilities.length - 1, newDirection]);
-    } else {
-      setCurrentIndex([0, newDirection]);
-    }
+// 3D Tilt Card Component
+function FacilityCard({ facility, index }: { facility: Facility; index: number }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Mouse position for 3D tilt
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Spring physics for smooth tilt
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), {
+    stiffness: 300,
+    damping: 30,
+  });
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), {
+    stiffness: 300,
+    damping: 30,
+  });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(x);
+    mouseY.set(y);
   };
 
-  const goToSlide = (index: number): void => {
-    const newDirection = index > currentIndex ? 1 : -1;
-    setCurrentIndex([index, newDirection]);
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+    setIsHovered(false);
   };
 
-  const currentFacility = facilities[currentIndex];
+  // Parallax scroll effect
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "end start"],
+  });
+  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
 
   return (
-    <Section className="relative overflow-hidden bg-black">
-      <motion.div
-        className="container mx-auto"
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-      >
-        {/* Section Header */}
-        <motion.div className="text-center mb-12 md:mb-16" variants={itemVariants}>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Unsere <span className="text-[#DD9933]">Sauna</span>
-          </h2>
-          <p className="max-w-3xl mx-auto text-base md:text-lg text-white/80 leading-relaxed">
-            Auf über 1400 m² und drei Etagen kannst du dir eine kleine Auszeit
-            von der Welt nehmen. Egal ob du am großen Außenpool in der Sonne
-            liegen möchtest, im Dampfbad und der Trockensauna schwitzt oder
-            durch die langen Gänge unserer Cruisingarea umherschweifst: Hier
-            findet jeder das was er sucht.
-          </p>
-        </motion.div>
-
-        {/* Carousel Container */}
+    <motion.div
+      ref={cardRef}
+      className="group relative flex-shrink-0 w-[300px] sm:w-[340px] lg:w-[380px] h-[480px] sm:h-[520px] lg:h-[580px] cursor-pointer"
+      initial={{ opacity: 0, y: 60 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{
+        duration: 0.7,
+        delay: index * 0.15,
+        ease: [0.25, 0.1, 0.25, 1],
+      }}
+      style={{
+        rotateX: isHovered ? rotateX : 0,
+        rotateY: isHovered ? rotateY : 0,
+        transformStyle: "preserve-3d",
+        perspective: 1000,
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Card Container */}
+      <div className="relative w-full h-full rounded-2xl overflow-hidden bg-dark-gray shadow-2xl">
+        {/* Background Image with Parallax */}
         <motion.div
-          className="relative max-w-4xl mx-auto"
-          variants={itemVariants}
+          className="absolute inset-0 w-full h-[120%] -top-[10%]"
+          style={{ y: imageY }}
         >
-          {/* Carousel Content */}
-          <div className="relative bg-[#212121] rounded-2xl p-6 md:p-10 lg:p-12 min-h-[320px] md:min-h-[280px] overflow-hidden">
-            <AnimatePresence initial={false} custom={direction} mode="wait">
-              <motion.div
-                key={currentIndex}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.3 },
-                }}
-                className="absolute inset-0 p-6 md:p-10 lg:p-12 flex flex-col justify-center"
-              >
-                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#DD9933] mb-4 md:mb-6 tracking-wide">
-                  {currentFacility.title}
-                </h3>
-                <div className="space-y-4">
-                  {currentFacility.description.split("\n\n").map((paragraph, idx) => (
-                    <p
-                      key={idx}
-                      className="text-white text-base md:text-lg leading-relaxed"
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Progress Indicator */}
-            <div className="absolute top-4 right-4 md:top-6 md:right-6">
-              <span className="text-[#DD9933] font-semibold text-sm md:text-base">
-                {String(currentIndex + 1).padStart(2, "0")} /{" "}
-                {String(facilities.length).padStart(2, "0")}
-              </span>
-            </div>
-          </div>
-
-          {/* Navigation Arrows */}
-          <div className="flex items-center justify-center gap-4 mt-6">
-            <motion.button
-              onClick={() => paginate(-1)}
-              className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#212121] border-2 border-[#DD9933] flex items-center justify-center text-[#DD9933] transition-colors hover:bg-[#DD9933] hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              aria-label="Previous facility"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </motion.button>
-
-            {/* Dots Indicator */}
-            <div className="flex items-center gap-2 mx-4">
-              {facilities.map((_, index) => (
-                <motion.button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className={`h-2.5 rounded-full transition-all duration-300 ${
-                    index === currentIndex
-                      ? "bg-[#DD9933] w-8"
-                      : "bg-white/30 hover:bg-white/50 w-2.5"
-                  }`}
-                  whileHover={{ scale: 1.2 }}
-                  whileTap={{ scale: 0.9 }}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
-            </div>
-
-            <motion.button
-              onClick={() => paginate(1)}
-              className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#212121] border-2 border-[#DD9933] flex items-center justify-center text-[#DD9933] transition-colors hover:bg-[#DD9933] hover:text-black"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              aria-label="Next facility"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </motion.button>
-          </div>
+          <motion.div
+            className="relative w-full h-full"
+            animate={{ scale: isHovered ? 1.05 : 1 }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <Image
+              src={facility.image}
+              alt={facility.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 300px, (max-width: 1024px) 340px, 380px"
+              priority={index < 2}
+            />
+          </motion.div>
         </motion.div>
+
+        {/* Gradient Overlay - Always visible at bottom */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-80" />
+
+        {/* Hover Overlay - Darkens on hover */}
+        <motion.div
+          className="absolute inset-0 bg-black/40"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+        />
+
+        {/* Gold Accent Line - Animated on hover */}
+        <motion.div
+          className="absolute bottom-0 left-0 h-[3px] bg-gradient-to-r from-gold to-gold-light"
+          initial={{ width: "0%" }}
+          animate={{ width: isHovered ? "100%" : "0%" }}
+          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+        />
+
+        {/* Content Container */}
+        <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8">
+          {/* Subtitle - Appears on hover */}
+          <motion.span
+            className="text-gold text-xs sm:text-sm font-medium tracking-[0.2em] uppercase mb-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{
+              opacity: isHovered ? 1 : 0,
+              y: isHovered ? 0 : 20,
+            }}
+            transition={{ duration: 0.4, delay: isHovered ? 0.1 : 0 }}
+          >
+            {facility.subtitle}
+          </motion.span>
+
+          {/* Title */}
+          <motion.h3
+            className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-3 tracking-wide"
+            animate={{ y: isHovered ? -8 : 0 }}
+            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            {facility.title}
+          </motion.h3>
+
+          {/* Description - Slides up on hover */}
+          <motion.div
+            className="overflow-hidden"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{
+              height: isHovered ? "auto" : 0,
+              opacity: isHovered ? 1 : 0,
+            }}
+            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <p className="text-white/80 text-sm sm:text-base leading-relaxed">
+              {facility.description}
+            </p>
+          </motion.div>
+
+          {/* View More Link - Appears on hover */}
+          <motion.div
+            className="mt-4 flex items-center gap-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{
+              opacity: isHovered ? 1 : 0,
+              x: isHovered ? 0 : -20,
+            }}
+            transition={{ duration: 0.4, delay: isHovered ? 0.2 : 0 }}
+          >
+            <span className="text-gold text-sm font-medium">Mehr entdecken</span>
+            <motion.svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-gold"
+              animate={{ x: isHovered ? 4 : 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </motion.svg>
+          </motion.div>
+        </div>
+
+        {/* Number Badge */}
+        <div className="absolute top-6 right-6 w-10 h-10 rounded-full border border-white/20 flex items-center justify-center backdrop-blur-sm bg-black/20">
+          <span className="text-white/60 text-sm font-medium">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// Scroll indicator component
+function ScrollIndicator() {
+  return (
+    <motion.div
+      className="flex items-center gap-3 text-white/40 mt-8 lg:hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1.5, duration: 0.5 }}
+    >
+      <motion.div
+        className="w-8 h-[2px] bg-gold"
+        animate={{ scaleX: [1, 0.5, 1] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <span className="text-xs uppercase tracking-widest">Scroll</span>
+      <motion.svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        animate={{ x: [0, 4, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <path d="M5 12h14" />
+        <path d="m12 5 7 7-7 7" />
+      </motion.svg>
+    </motion.div>
+  );
+}
+
+export default function SaunaSection(): React.ReactElement {
+  const sectionRef = useRef<HTMLElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll-linked animations
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+
+  return (
+    <Section
+      ref={sectionRef}
+      id="sauna"
+      className="relative overflow-hidden bg-black py-20 sm:py-28 lg:py-36"
+      containerSize="full"
+      padding="none"
+    >
+      {/* Background Elements */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{ y: backgroundY }}
+      >
+        {/* Decorative circles */}
+        <div className="absolute top-20 left-10 w-64 h-64 border border-gold/10 rounded-full" />
+        <div className="absolute bottom-40 right-20 w-96 h-96 border border-gold/5 rounded-full" />
+        <div className="absolute top-1/2 left-1/3 w-32 h-32 border border-gold/10 rounded-full" />
       </motion.div>
 
-      {/* Decorative Elements */}
+      {/* Section Header */}
+      <div className="relative px-4 sm:px-6 lg:px-8 xl:px-12 mb-12 sm:mb-16 lg:mb-20">
+        <motion.div
+          className="max-w-4xl mx-auto text-center"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+        >
+          {/* Pre-title */}
+          <motion.span
+            className="inline-block text-gold text-xs sm:text-sm font-medium tracking-[0.3em] uppercase mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Wellness & Erholung
+          </motion.span>
+
+          {/* Main Title with Animated Gradient */}
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8">
+            <span className="text-white">Unsere </span>
+            <AnimatedGradientText className="font-bold">Sauna</AnimatedGradientText>
+          </h2>
+
+          {/* Subtitle */}
+          <motion.p
+            className="text-white/70 text-base sm:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            Auf über <span className="text-gold font-medium">1400 m²</span> und drei Etagen 
+            erwartet Dich eine Oase der Entspannung. Entdecke unsere einzigartigen 
+            Wellnessbereiche.
+          </motion.p>
+        </motion.div>
+      </div>
+
+      {/* Cards Container - Horizontal Scroll on Mobile/Tablet */}
       <motion.div
-        className="absolute top-20 left-10 w-32 h-32 border border-[#DD9933]/20 rounded-full"
-        initial={{ opacity: 0, scale: 0 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      />
+        style={{ opacity }}
+        className="relative"
+      >
+        {/* Scroll Container */}
+        <div
+          ref={scrollContainerRef}
+          className="flex gap-5 sm:gap-6 lg:gap-8 overflow-x-auto px-4 sm:px-6 lg:px-8 xl:px-12 pb-8 lg:pb-0 lg:grid lg:grid-cols-5 lg:max-w-[1800px] lg:mx-auto scrollbar-hide"
+          style={{
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
+          {facilities.map((facility, index) => (
+            <FacilityCard key={facility.id} facility={facility} index={index} />
+          ))}
+        </div>
+
+        {/* Scroll Indicator - Mobile only */}
+        <div className="flex justify-center lg:hidden">
+          <ScrollIndicator />
+        </div>
+
+        {/* Fade edges for scroll indication */}
+        <div className="absolute top-0 right-0 w-20 h-full bg-gradient-to-l from-black to-transparent pointer-events-none lg:hidden" />
+        <div className="absolute top-0 left-0 w-8 h-full bg-gradient-to-r from-black to-transparent pointer-events-none lg:hidden" />
+      </motion.div>
+
+      {/* Bottom CTA */}
       <motion.div
-        className="absolute bottom-20 right-10 w-48 h-48 border border-[#DD9933]/10 rounded-full"
-        initial={{ opacity: 0, scale: 0 }}
-        whileInView={{ opacity: 1, scale: 1 }}
+        className="text-center mt-12 sm:mt-16 lg:mt-20 px-4"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 0.4 }}
-      />
+        transition={{ duration: 0.6, delay: 0.8 }}
+      >
+        <p className="text-white/50 text-sm sm:text-base mb-4">
+          Reserviere jetzt Deinen Besuch und erlebe pure Entspannung
+        </p>
+        <motion.button
+          className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-black font-semibold rounded-full hover:bg-gold-light transition-colors"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <span>Termin buchen</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </motion.button>
+      </motion.div>
+
     </Section>
   );
 }

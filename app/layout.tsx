@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import FloatingParticles from "./components/FloatingParticles";
+import { ScrollProgress } from "./components/ScrollProgress";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -68,6 +70,8 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${geistMono.variable} font-sans antialiased`}
       >
+        <FloatingParticles />
+        <ScrollProgress />
         {children}
       </body>
     </html>

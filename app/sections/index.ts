@@ -1,4 +1,4 @@
-export { Hero } from "./Hero";
+export { default as Hero } from "./Hero";
 export { default as CalendarSection } from "./CalendarSection";
 export { BarGastroSection } from "./BarGastroSection";
 export { HoursSection } from "./HoursSection";

@@ -123,6 +123,68 @@ function getEventsForDate(date: Date, events: Event[]): Event[] {
   });
 }
 
+// Enhanced animation variants with smoother transitions
+const slideVariants: Variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 300 : -300,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? -300 : 300,
+    opacity: 0,
+  }),
+};
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const titleVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const lineVariants: Variants = {
+  hidden: { scaleX: 0 },
+  visible: {
+    scaleX: 1,
+    transition: {
+      duration: 0.8,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
 export default function CalendarSection() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -173,44 +235,6 @@ export default function CalendarSection() {
     setSelectedDate(new Date());
   };
 
-  // Animation variants
-  const slideVariants: Variants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction > 0 ? -300 : 300,
-      opacity: 0,
-    }),
-  };
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.4,
-        ease: "easeOut",
-      },
-    },
-  };
-
   // Scroll to section on mount
   useEffect(() => {
     const hash = window.location.hash;
@@ -229,24 +253,45 @@ export default function CalendarSection() {
     >
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#DD9933]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#DD9933]/5 rounded-full blur-3xl" />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2 }}
+          className="absolute top-0 left-1/4 w-96 h-96 bg-[#DD9933]/5 rounded-full blur-3xl" 
+        />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2, delay: 0.3 }}
+          className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#DD9933]/5 rounded-full blur-3xl" 
+        />
       </div>
 
+      {/* Section divider top */}
+      <motion.div
+        variants={lineVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#DD9933]/50 to-transparent"
+      />
+
       <div className="relative max-w-7xl mx-auto">
-        {/* Section Header */}
+        {/* Section Header with smoother animations */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={titleVariants}
           className="text-center mb-12"
         >
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
+            initial={{ scale: 0, rotate: -180 }}
+            whileInView={{ scale: 1, rotate: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#DD9933]/30 bg-[#DD9933]/10 mb-6"
           >
             <CalendarIcon className="w-4 h-4 text-[#DD9933]" />
@@ -259,24 +304,33 @@ export default function CalendarSection() {
             <span className="text-gradient-gold">Kalender & Events</span>
           </h2>
 
-          <p className="text-white/60 text-lg max-w-2xl mx-auto">
+          <motion.p 
+            variants={itemVariants}
+            className="text-white/60 text-lg max-w-2xl mx-auto"
+          >
             Entdecke unsere wöchentlichen Events, Specials und Wellness-Angebote
-          </p>
+          </motion.p>
 
           {/* Section divider */}
-          <div className="section-divider mt-8 max-w-xs mx-auto" />
+          <motion.div 
+            variants={lineVariants}
+            className="section-divider mt-8 max-w-xs mx-auto" 
+          />
         </motion.div>
 
-        {/* Controls Bar */}
+        {/* Controls Bar with staggered reveal */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
           className="mb-8 space-y-4"
         >
           {/* Top Row: View Switcher, Navigation, Search */}
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+          <motion.div 
+            variants={itemVariants}
+            className="flex flex-col lg:flex-row gap-4 items-center justify-between"
+          >
             {/* View Switcher */}
             <div className="flex bg-[#212121] rounded-xl p-1 border border-[#DD9933]/20">
               {viewOptions.map((option) => (
@@ -362,10 +416,13 @@ export default function CalendarSection() {
                 </motion.button>
               )}
             </div>
-          </div>
+          </motion.div>
 
           {/* Category Filter */}
-          <div className="flex flex-wrap items-center gap-2 justify-center lg:justify-start">
+          <motion.div 
+            variants={itemVariants}
+            className="flex flex-wrap items-center gap-2 justify-center lg:justify-start"
+          >
             <Filter className="w-4 h-4 text-[#DD9933] mr-2" />
             {categories.map((category) => (
               <motion.button
@@ -385,10 +442,10 @@ export default function CalendarSection() {
                 {category}
               </motion.button>
             ))}
-          </div>
+          </motion.div>
         </motion.div>
 
-        {/* Content Area */}
+        {/* Content Area with smoother transitions */}
         <AnimatePresence mode="wait" custom={direction}>
           {view === "month" && (
             <motion.div
@@ -398,18 +455,21 @@ export default function CalendarSection() {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.4, ease: "easeInOut" }}
+              transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="bg-[#212121]/30 rounded-2xl border border-[#DD9933]/20 overflow-hidden"
             >
               {/* Calendar Header */}
               <div className="grid grid-cols-7 border-b border-[#DD9933]/20">
                 {weekDays.map((day, index) => (
-                  <div
+                  <motion.div
                     key={index}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
                     className="py-3 text-center text-sm font-medium text-[#DD9933]/80"
                   >
                     {day}
-                  </div>
+                  </motion.div>
                 ))}
               </div>
 
@@ -442,7 +502,7 @@ export default function CalendarSection() {
                     >
                       {/* Day number */}
                       <div className="flex justify-between items-start mb-1">
-                        <span
+                        <motion.span
                           className={`
                             text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full
                             transition-all duration-300
@@ -454,9 +514,10 @@ export default function CalendarSection() {
                                 : "text-white/30"
                             }
                           `}
+                          whileHover={{ scale: 1.1 }}
                         >
                           {format(day, "d")}
-                        </span>
+                        </motion.span>
                       </div>
 
                       {/* Event indicators */}
@@ -466,7 +527,10 @@ export default function CalendarSection() {
                             key={event.id}
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ delay: eventIndex * 0.05 }}
+                            transition={{ 
+                              delay: eventIndex * 0.05,
+                              ease: [0.25, 0.46, 0.45, 0.94]
+                            }}
                             className={`
                               w-2 h-2 rounded-full
                               ${
@@ -516,7 +580,7 @@ export default function CalendarSection() {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.4, ease: "easeInOut" }}
+              transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="space-y-4"
             >
               {filteredEvents.length > 0 ? (
@@ -550,7 +614,7 @@ export default function CalendarSection() {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.4, ease: "easeInOut" }}
+              transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="bg-[#212121]/30 rounded-2xl border border-[#DD9933]/20 p-6"
             >
               {/* Day selector */}
@@ -636,6 +700,7 @@ export default function CalendarSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="mt-8"
           >
             <h3 className="text-xl font-semibold text-[#DD9933] mb-4">
@@ -667,25 +732,44 @@ export default function CalendarSection() {
 
         {/* Legend */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm"
         >
-          <div className="flex items-center gap-2">
+          <motion.div 
+            className="flex items-center gap-2"
+            whileHover={{ scale: 1.05 }}
+          >
             <div className="w-3 h-3 rounded-full bg-[#DD9933]" />
             <span className="text-white/60">Rabatte & Specials</span>
-          </div>
-          <div className="flex items-center gap-2">
+          </motion.div>
+          <motion.div 
+            className="flex items-center gap-2"
+            whileHover={{ scale: 1.05 }}
+          >
             <div className="w-3 h-3 rounded-full bg-[#CC3366]" />
             <span className="text-white/60">Fetisch</span>
-          </div>
-          <div className="flex items-center gap-2">
+          </motion.div>
+          <motion.div 
+            className="flex items-center gap-2"
+            whileHover={{ scale: 1.05 }}
+          >
             <div className="w-3 h-3 rounded-full bg-emerald-400" />
             <span className="text-white/60">Wellness</span>
-          </div>
+          </motion.div>
         </motion.div>
       </div>
+
+      {/* Section divider bottom */}
+      <motion.div
+        variants={lineVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#DD9933]/50 to-transparent"
+      />
     </section>
   );
 }

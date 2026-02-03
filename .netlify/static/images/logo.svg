@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" fill="none">
+  <!-- Palm Tree Icon -->
+  <g transform="translate(20, 20)">
+    <!-- Palm trunk -->
+    <path d="M35 70 Q38 50 35 30 Q32 50 35 70" stroke="#DD9933" stroke-width="3" fill="none"/>
+    <!-- Palm leaves -->
+    <path d="M35 30 Q20 15 10 25" stroke="#DD9933" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M35 30 Q50 10 65 20" stroke="#DD9933" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M35 30 Q35 5 35 15" stroke="#DD9933" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M35 30 Q15 25 5 35" stroke="#DD9933" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M35 30 Q55 25 70 35" stroke="#DD9933" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Crescent moon shape behind -->
+    <path d="M25 25 Q35 10 45 25 Q35 40 25 25" fill="#DD9933" opacity="0.3"/>
+  </g>
+  
+  <!-- Text: BADEHAUS -->
+  <text x="90" y="45" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="600" fill="#DD9933" letter-spacing="2">BADEHAUS</text>
+  
+  <!-- Text: BABYLON -->
+  <text x="90" y="70" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#DD9933" letter-spacing="1">BABYLON</text>
+  
+  <!-- Text: COLOGNE -->
+  <text x="90" y="92" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="400" fill="#888888" letter-spacing="4">COLOGNE</text>
+  
+  <!-- Decorative line -->
+  <line x1="90" y1="78" x2="230" y2="78" stroke="#DD9933" stroke-width="1" opacity="0.5"/>
+</svg>
