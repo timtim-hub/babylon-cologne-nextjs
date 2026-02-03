@@ -1,0 +1,11 @@
+export { Hero } from "./Hero";
+export { default as CalendarSection } from "./CalendarSection";
+export { BarGastroSection } from "./BarGastroSection";
+export { HoursSection } from "./HoursSection";
+export { default as SaunaSection } from "./SaunaSection";
+export { MassageSection } from "./MassageSection";
+export { TeamSection } from "./TeamSection";
+export { FAQSection } from "./FAQSection";
+export { default as NewsSection } from "./NewsSection";
+export { default as PricesSection } from "./PricesSection";
+export { default as DealsSection } from "./DealsSection";

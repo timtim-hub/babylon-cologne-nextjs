@@ -1,0 +1,171 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+  
+  /* Babylon Cologne Custom Colors */
+  --color-gold: #DD9933;
+  --color-gold-light: #E5AD5C;
+  --color-gold-dark: #C4822A;
+  --color-black: #000000;
+  --color-dark-gray: #212121;
+  --color-white: #FFFFFF;
+  --color-pink: #CC3366;
+  --color-pink-light: #E64D80;
+  --color-light-gray: #F4F4F4;
+  --color-medium-gray: #666666;
+  
+  /* Theme mappings */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.5rem;
+  
+  /* Dark theme as default for Babylon */
+  --background: #000000;
+  --foreground: #FFFFFF;
+  --card: #212121;
+  --card-foreground: #FFFFFF;
+  --popover: #212121;
+  --popover-foreground: #FFFFFF;
+  --primary: #DD9933;
+  --primary-foreground: #000000;
+  --secondary: #212121;
+  --secondary-foreground: #FFFFFF;
+  --muted: #212121;
+  --muted-foreground: #666666;
+  --accent: #CC3366;
+  --accent-foreground: #FFFFFF;
+  --destructive: #CC3366;
+  --border: #333333;
+  --input: #212121;
+  --ring: #DD9933;
+}
+
+/* Light theme override */
+.light {
+  --background: #FFFFFF;
+  --foreground: #000000;
+  --card: #F4F4F4;
+  --card-foreground: #000000;
+  --popover: #FFFFFF;
+  --popover-foreground: #000000;
+  --primary: #DD9933;
+  --primary-foreground: #000000;
+  --secondary: #F4F4F4;
+  --secondary-foreground: #000000;
+  --muted: #F4F4F4;
+  --muted-foreground: #666666;
+  --accent: #CC3366;
+  --accent-foreground: #FFFFFF;
+  --destructive: #CC3366;
+  --border: #E5E5E5;
+  --input: #F4F4F4;
+  --ring: #DD9933;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Selection styling */
+  ::selection {
+    background-color: rgba(221, 153, 51, 0.3);
+    color: #FFFFFF;
+  }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #212121;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #DD9933;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #E5AD5C;
+  }
+}
+
+@layer utilities {
+  /* Text gradient utility */
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #DD9933 0%, #E5AD5C 50%, #DD9933 100%);
+  }
+  
+  /* Gold glow effect */
+  .glow-gold {
+    box-shadow: 0 0 20px rgba(221, 153, 51, 0.3), 0 0 40px rgba(221, 153, 51, 0.1);
+  }
+  
+  /* Pink glow effect */
+  .glow-pink {
+    box-shadow: 0 0 20px rgba(204, 51, 102, 0.3), 0 0 40px rgba(204, 51, 102, 0.1);
+  }
+  
+  /* Hero gradient overlay */
+  .hero-gradient {
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.3) 0%,
+      rgba(0, 0, 0, 0.5) 50%,
+      rgba(0, 0, 0, 0.9) 100%
+    );
+  }
+  
+  /* Section divider */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      #DD9933 50%,
+      transparent 100%
+    );
+  }
+}
