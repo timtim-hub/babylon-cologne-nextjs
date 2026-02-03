@@ -1,78 +1,140 @@
-# Babylon Cologne - Next.js Website
+# Babylon Cologne - Next.js Rebuild
 
-A modern, performant website for Babylon Cologne Gay Sauna built with Next.js 14+, TypeScript, and Tailwind CSS.
+A stunning, fully animated rebuild of the Babylon Cologne website using Next.js 14+, Tailwind CSS, and Framer Motion.
 
-## Features
+## 🌐 Live Site
 
-- **Next.js 14+** with App Router
-- **TypeScript** for type safety
-- **Tailwind CSS** with custom Babylon theme colors
-- **Framer Motion** for smooth animations
-- **Lucide React** for icons
-- **Static Export** for fast deployment
+**https://babylon-cologne.netlify.app**
 
-## Brand Colors
+## 📁 GitHub Repository
 
-| Color | Hex | Usage |
-|-------|-----|-------|
-| Primary Gold | `#DD9933` | Main brand color, CTAs, highlights |
-| Black | `#000000` | Background |
-| Dark Gray | `#212121` | Cards, sections |
-| White | `#FFFFFF` | Text on dark backgrounds |
-| Pink Accent | `#CC3366` | Accent color, hover states |
-| Light Gray | `#F4F4F4` | Light mode backgrounds |
+**https://github.com/timtim-hub/babylon-cologne-nextjs**
 
-## Project Structure
+## 🎨 Features
+
+### Visual Design
+- **Exact color matching** from original website
+  - Primary Gold: `#DD9933`
+  - Black: `#000000`
+  - Dark Gray: `#212121`
+  - White: `#FFFFFF`
+  - Pink Accent: `#CC3366`
+- **Dark theme** throughout
+- **Responsive design** for all screen sizes
+- **Custom images** optimized for the brand
+
+### Sections Included
+1. **Hero** - Full viewport with parallax effect and animated text
+2. **Sauna Section** - Interactive carousel with 5 facilities
+3. **News Section** - Latest updates with hover effects
+4. **Prices Section** - Entry prices with animated cards
+5. **Deals Section** - Multi-entry cards and add-ons
+6. **Hours Section** - Opening hours with visual design
+7. **Calendar Section** - Full event calendar with month/list/day views
+8. **Bar & Gastro Section** - Food and drinks information
+9. **Massage Section** - Services and pricing
+10. **Team Section** - Team member showcase
+11. **FAQ Section** - Accordion with 16+ questions
+12. **Footer** - Contact info and social links
+
+### Animations (Framer Motion)
+- Page load animations
+- Scroll-triggered section reveals
+- Parallax hero effect
+- Stagger animations for lists
+- Hover effects on all cards
+- Smooth navigation transitions
+- Calendar month slide animations
+- FAQ accordion expand/collapse
+
+### Technical Stack
+- **Framework**: Next.js 16+ (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **Date Handling**: date-fns
+- **Deployment**: Netlify
+
+## 📂 Project Structure
 
 ```
-babylon-nextjs/
-├── app/
-│   ├── components/     # Reusable UI components
-│   ├── sections/       # Page section components
-│   ├── hooks/          # Custom React hooks
-│   ├── lib/            # Utility functions
-│   ├── globals.css     # Global styles
-│   ├── layout.tsx      # Root layout
-│   └── page.tsx        # Home page
-├── public/
-│   ├── images/         # Image assets
-│   └── fonts/          # Custom fonts
-├── next.config.ts      # Next.js configuration
-├── package.json
-└── tsconfig.json
+app/
+├── components/          # Reusable UI components
+│   ├── Button.tsx
+│   ├── Container.tsx
+│   ├── EventCard.tsx
+│   ├── Footer.tsx
+│   ├── MotionComponents.tsx
+│   ├── Navbar.tsx
+│   └── Section.tsx
+├── sections/            # Page sections
+│   ├── Hero.tsx
+│   ├── SaunaSection.tsx
+│   ├── NewsSection.tsx
+│   ├── PricesSection.tsx
+│   ├── DealsSection.tsx
+│   ├── HoursSection.tsx
+│   ├── CalendarSection.tsx
+│   ├── BarGastroSection.tsx
+│   ├── MassageSection.tsx
+│   ├── TeamSection.tsx
+│   └── FAQSection.tsx
+├── hooks/               # Custom React hooks
+├── lib/                 # Utility functions
+├── page.tsx             # Main page
+├── layout.tsx           # Root layout
+└── globals.css          # Global styles
+
+public/
+├── images/              # All website images
+└── icons/               # SVG icons
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
-1. Install dependencies:
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+
+### Installation
+
 ```bash
+# Clone the repository
+git clone https://github.com/timtim-hub/babylon-cologne-nextjs.git
+
+# Navigate to project
+cd babylon-cologne-nextjs
+
+# Install dependencies
 npm install
-```
 
-2. Run development server:
-```bash
+# Run development server
 npm run dev
-```
 
-3. Build for production:
-```bash
+# Build for production
 npm run build
 ```
 
-The static site will be exported to the `dist` folder.
+## 📊 Content from Original Site
 
-## Available Components
+All text content has been extracted and preserved from the original website:
+- Complete pricing information
+- All facility descriptions
+- Event calendar data
+- FAQ questions and answers
+- Opening hours
+- Team information
+- Contact details
 
-- `Button` - Styled button with variants
-- `Container` - Responsive container wrapper
-- `Section` - Page section wrapper
+## 🎯 Original Website
 
-## Custom Hooks
+https://www.babylon-cologne.de/
 
-- `useScrollPosition` - Track scroll position and direction
-- `useInView` - Intersection Observer for animations
-- `useMediaQuery` - Responsive breakpoint detection
+## 📝 License
 
-## License
+This is a rebuild project for educational purposes. All content belongs to Babylon Cologne.
 
-Private - Babylon Cologne
+---
+
+Built with ❤️ using Next.js, Tailwind CSS, and Framer Motion
