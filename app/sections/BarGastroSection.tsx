@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform, Variants } from "framer-motion";
 import { Section } from "../components/Section";
 import { useInView } from "../hooks/useInView";
 import { Wine, UtensilsCrossed, ChefHat } from "lucide-react";
+import Image from "next/image";
 
 // Stagger container with delayChildren
 const containerVariants: Variants = {
@@ -213,19 +214,14 @@ export function BarGastroSection() {
               transition={{ duration: 0.5 }}
               className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#212121]"
             >
-              {/* Placeholder for Bar image */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                  >
-                    <Wine className="mx-auto mb-4 h-16 w-16 text-[#DD9933]/30" />
-                  </motion.div>
-                  <p className="text-white/40">Bar & Terrasse Bild</p>
-                </div>
-              </div>
+              {/* Bar & Menu Image */}
+              <Image
+                src="/images/Babylon-Badehaus-Cologne-Speisekarte-300x300-1.png"
+                alt="Speisekarte Babylon Cologne"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
               
               {/* Overlay gradient */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />

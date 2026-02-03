@@ -400,14 +400,23 @@ const Hero: React.FC = () => {
       className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a]"
     >
       {/* =====================================================================
-          ANIMATED GRADIENT MESH BACKGROUND
+          BACKGROUND IMAGE WITH OVERLAY
       ===================================================================== */}
       <motion.div
         className="absolute inset-0 z-0"
         style={{ y: smoothBackgroundY }}
       >
-        {/* Base dark gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#0d0d0d] to-[#0a0a0a]" />
+        {/* Background Image from Original Site */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ 
+            backgroundImage: 'url(/images/hero-original.jpg)',
+            filter: 'brightness(0.4) contrast(1.1)'
+          }}
+        />
+        
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/70 via-[#0a0a0a]/50 to-[#0a0a0a]/90" />
 
         {/* Animated gradient mesh */}
         <div

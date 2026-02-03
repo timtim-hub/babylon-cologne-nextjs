@@ -23,7 +23,7 @@ const newsArticles: NewsArticle[] = [
     excerpt:
       "Jetzt fängt das Jahr so richtig an. Mit Karneval steht Köln wieder Kopf und auch bei uns in der Babylon wird der Februar wieder dynamisch...",
     link: "#",
-    image: "/images/news-1.jpg",
+    image: "/images/news-1.webp",
   },
   {
     id: 2,
@@ -32,7 +32,7 @@ const newsArticles: NewsArticle[] = [
     excerpt:
       "Freut euch auf ein frisches Design, eine neue News-Sektion mit aktuellen Updates und Gossip aus der Babylon...",
     link: "#",
-    image: "/images/news-2.jpg",
+    image: "/images/news-2.webp",
   },
   {
     id: 3,
@@ -41,7 +41,7 @@ const newsArticles: NewsArticle[] = [
     excerpt:
       "Auch dieses Jahr haben wir wieder unsere beliebte 10er Karten Aktion. Vom 24.12. bis zum 31.01. erhaltet ihr...",
     link: "#",
-    image: "/images/news-3.jpg",
+    image: "/images/news-3.webp",
   },
 ];
 
